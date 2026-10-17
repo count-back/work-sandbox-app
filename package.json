@@ -1,0 +1,12 @@
+{
+  "name": "work-sandbox-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Small JSON API service used to exercise work-console.",
+  "scripts": {
+    "start": "node src/main.js",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=20" }
+}
