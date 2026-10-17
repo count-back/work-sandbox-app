@@ -2,10 +2,12 @@
 import { send } from './http.js';
 import { routes as health } from './routes/health.js';
 import { routes as users } from './routes/users.js';
+import { routes as version } from './routes/version.js';
 
 const table = [
   ...health,
   ...users,
+  ...version,
 ];
 
 export async function handle(req, res) {
