@@ -29,6 +29,13 @@ export const routes = [
     if (err) return send(res, 400, { error: err });
     send(res, 200, users.update(Number(id), { name: (body.name ?? cur.name).trim(), email: body.email ?? cur.email }));
   }],
+  ['PUT', /^\/users\/(\d+)$/, async (req, res, [id]) => {
+    const body = await readJson(req);
+    const err = validate(body);
+    if (err) return send(res, 400, { error: err });
+    const u = users.update(Number(id), { name: body.name.trim(), email: body.email ?? null });
+    return u ? send(res, 200, u) : send(res, 404, { error: 'not found' });
+  }],
   ['DELETE', /^\/users\/(\d+)$/, (req, res, [id]) => {
     return users.remove(Number(id)) ? send(res, 204) : send(res, 404, { error: 'not found' });
   }],
