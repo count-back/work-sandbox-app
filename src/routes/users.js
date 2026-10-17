@@ -3,8 +3,10 @@ import { createCollection } from '../store.js';
 
 const users = createCollection();
 
-function validate(body) {
-  if (typeof body.name !== 'string' || !body.name.trim()) return 'name is required';
+function validate(body, { partial = false } = {}) {
+  if (!partial || body.name !== undefined) {
+    if (typeof body.name !== 'string' || !body.name.trim()) return 'name is required';
+  }
   if (body.email !== undefined && !/^[^@\s]+@[^@\s]+$/.test(body.email)) return 'email is invalid';
   return '';
 }
@@ -28,11 +30,14 @@ export const routes = [
     const u = users.update(Number(id), { name: body.name.trim(), email: body.email ?? null });
     return u ? send(res, 200, u) : send(res, 404, { error: 'not found' });
   }],
-  ['PUT', /^\/users\/(\d+)$/, async (req, res, [id]) => {
+  ['PATCH', /^\/users\/(\d+)$/, async (req, res, [id]) => {
     const body = await readJson(req);
-    const err = validate(body);
+    const err = validate(body, { partial: true });
     if (err) return send(res, 400, { error: err });
-    const u = users.update(Number(id), { name: body.name.trim(), email: body.email ?? null });
+    const fields = {};
+    if (body.name !== undefined) fields.name = body.name.trim();
+    if (body.email !== undefined) fields.email = body.email;
+    const u = users.update(Number(id), fields);
     return u ? send(res, 200, u) : send(res, 404, { error: 'not found' });
   }],
   ['DELETE', /^\/users\/(\d+)$/, (req, res, [id]) => {
