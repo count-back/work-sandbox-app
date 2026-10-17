@@ -28,3 +28,16 @@ test('rejects a user without a name', async () => {
     await s.close();
   }
 });
+
+test('patch a user', async () => {
+  const s = await serve();
+  try {
+    const u = await (await fetch(`${s.url}/users`, json({ name: 'Bo' }))).json();
+    const r = await fetch(`${s.url}/users/${u.id}`, { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: 'bo@example.com' }) });
+    assert.equal(r.status, 200);
+    assert.equal((await r.json()).email, 'bo@example.com');
+    assert.equal((await fetch(`${s.url}/users/999`, { method: 'PATCH', body: '{}' })).status, 404);
+  } finally {
+    await s.close();
+  }
+});
